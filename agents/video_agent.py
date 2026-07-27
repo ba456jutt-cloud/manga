@@ -19,9 +19,10 @@ def get_audio_duration(audio_path: str) -> float:
         print(f"[-] FFprobe error for {audio_path}: {e}")
         return 5.0
 
-def assemble_manga_video(script_data: list, image_folder: str = "input", output_file: str = "output/manga_recap.mp4") -> bool:
+def assemble_video(script_data: list, output_file: str = "output/manga_recap.mp4") -> bool:
     """Assembles the video using raw FFmpeg to prevent OOM errors, applying a slow pan/zoom (Ken Burns)."""
     print("[*] Video Agent: Assembling Manga Recap video...")
+    image_folder = "input"
     
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     images = sorted([f for f in os.listdir(image_folder) if f.endswith(('.jpg', '.png', '.jpeg'))])
@@ -85,4 +86,4 @@ def assemble_manga_video(script_data: list, image_folder: str = "input", output_
 
 if __name__ == "__main__":
     # Dummy test
-    assemble_manga_video([])
+    assemble_video([])
