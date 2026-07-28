@@ -14,6 +14,7 @@ def generate_recap_script(synopsis: str, input_dir: str = "input", insights: str
     if not api_key:
         print("[-] Fatal Error: GEMINI_API_KEY not found.")
         return []
+    api_key = api_key.strip()
         
     image_files = sorted([f for f in os.listdir(input_dir) if f.endswith(('.jpg', '.png', '.jpeg'))])
     if not image_files:
@@ -50,7 +51,7 @@ def generate_recap_script(synopsis: str, input_dir: str = "input", insights: str
     """
     parts.append({"text": prompt_text})
         
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     payload = {
         "contents": [{"parts": parts}],
         "generationConfig": {"temperature": 0.7}
