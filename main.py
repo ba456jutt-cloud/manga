@@ -103,6 +103,10 @@ def main():
             if upload_video_id and generated_shorts:
                 print("\n[*] Uploading and Scheduling YouTube Shorts...")
                 
+                # Part 1 short publishes IMMEDIATELY with the long video
+                # Parts 2, 3, 4 schedule every 3 hours starting from 3 hours after upload
+                short_schedule_time = datetime.utcnow() + timedelta(hours=3)
+                
                 for i, short_vid in enumerate(generated_shorts):
                     print(f"[*] Processing Short {i+1}/{len(generated_shorts)}")
                     
@@ -116,11 +120,15 @@ def main():
                     funnel_text = f"📺 Watch the FULL Video Here: https://youtu.be/{upload_video_id}\n\n"
                     short_seo["description"] = funnel_text + short_seo["description"]
                     
-                    publish_at_str = global_schedule_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
-                    upload_to_youtube(short_vid, None, short_seo, publish_at=publish_at_str)
-                    
-                    # Increment global schedule time for the next short
-                    global_schedule_time += timedelta(hours=3)
+                    if i == 0:
+                        # Part 1: Publish Public IMMEDIATELY with Long Video
+                        print("    -> Part 1: Publishing Public IMMEDIATELY!")
+                        upload_to_youtube(short_vid, None, short_seo, publish_at=None)
+                    else:
+                        # Parts 2+: Schedule every 3 hours
+                        publish_at_str = short_schedule_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+                        upload_to_youtube(short_vid, None, short_seo, publish_at=publish_at_str)
+                        short_schedule_time += timedelta(hours=3)
         else:
             print("[-] Video assembly failed.")
             
