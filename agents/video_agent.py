@@ -50,11 +50,11 @@ def assemble_video(script_data: list, output_file: str = "output/manga_recap.mp4
             
             # FFmpeg Ken Burns effect (Fit inside resolution with padding to prevent text cutoff)
             if is_short:
-                # 9:16 vertical shorts aspect ratio
-                vf_filter = "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,zoompan=z='min(zoom+0.001,1.1)':d=1200"
+                # 9:16 vertical shorts aspect ratio (MUST pass s=1080x1920 to zoompan, otherwise FFmpeg defaults to 1280x720 widescreen!)
+                vf_filter = "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,zoompan=z='min(zoom+0.001,1.1)':d=1200:s=1080x1920"
             else:
                 # 16:9 widescreen long video aspect ratio
-                vf_filter = "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=black,zoompan=z='min(zoom+0.001,1.1)':d=1200"
+                vf_filter = "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=black,zoompan=z='min(zoom+0.001,1.1)':d=1200:s=1920x1080"
                 
             cmd = [
                 "ffmpeg", "-y",
