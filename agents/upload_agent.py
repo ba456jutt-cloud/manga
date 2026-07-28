@@ -86,17 +86,6 @@ def generate_seo_metadata(topic: str) -> dict:
             if len(metadata.get("title", "")) > 95:
                 metadata["title"] = metadata["title"][:92] + "..."
                 
-            # SEO HACK: Inject Watch Next links to revive old videos
-            from agents.db_agent import get_recent_uploads
-            recent_vids = get_recent_uploads(3)
-            if recent_vids:
-                watch_next_text = "\\n\\n📺 WATCH NEXT:\\n"
-                for vid in recent_vids:
-                    watch_next_text += f"🔗 {vid['title']} - https://youtu.be/{vid['id']}\\n"
-                
-                # Prepend the links so they are visible above the fold
-                metadata["description"] = watch_next_text + "\\n" + metadata.get("description", "")
-                
             print("[+] SEO Metadata generated successfully.")
             return metadata
         except Exception as e:

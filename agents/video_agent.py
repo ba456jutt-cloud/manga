@@ -19,7 +19,7 @@ def get_audio_duration(audio_path: str) -> float:
         print(f"[-] FFprobe error for {audio_path}: {e}")
         return 5.0
 
-def assemble_video(script_data: list, output_file: str = "output/manga_recap.mp4") -> bool:
+def assemble_video(script_data: list, output_file: str = "output/manga_recap.mp4", is_short: bool = False) -> bool:
     """Assembles the video using raw FFmpeg to prevent OOM errors, applying a slow pan/zoom (Ken Burns)."""
     print("[*] Video Agent: Assembling Manga Recap video...")
     image_folder = "input"
@@ -49,12 +49,18 @@ def assemble_video(script_data: list, output_file: str = "output/manga_recap.mp4
             scene_vid = os.path.abspath(f"output/scene_vid_{i:03d}.mp4")
             
             # FFmpeg Ken Burns effect
-            # zoompan: zoom in slowly from 1 to 1.1, center crop
+            if is_short:
+                # 9:16 vertical shorts aspect ratio
+                vf_filter = "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,zoompan=z='min(zoom+0.0005,1.1)':d=1200"
+            else:
+                # 16:9 widescreen long video aspect ratio
+                vf_filter = "scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080,zoompan=z='min(zoom+0.0005,1.1)':d=1200"
+                
             cmd = [
                 "ffmpeg", "-y",
                 "-loop", "1", "-i", img_path,
                 "-i", audio_abs,
-                "-vf", "scale=-2:1080,zoompan=z='min(zoom+0.0005,1.1)':d=1200",
+                "-vf", vf_filter,
                 "-c:v", "libx264", "-tune", "stillimage", "-c:a", "aac",
                 "-b:a", "192k", "-pix_fmt", "yuv420p",
                 "-shortest", "-t", str(duration + 0.2),
