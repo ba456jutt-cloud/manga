@@ -38,14 +38,6 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python main.py
 
-      - name: Upload Output Videos (Artifacts)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: manga-bot-videos
-          path: output/
-          retention-days: 7
-
       - name: Commit State Updates
         run: |
           git config --global user.name "github-actions[bot]"
