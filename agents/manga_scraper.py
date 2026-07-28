@@ -24,16 +24,30 @@ def search_manga(title: str) -> tuple:
     return None, None
 
 def get_first_chapter_id(manga_id: str) -> str:
+    # First try English
     url = f"https://api.mangadex.org/manga/{manga_id}/feed?translatedLanguage[]=en&order[chapter]=asc&limit=1"
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        if data["data"]:
+        if data.get("data"):
             chapter_id = data["data"][0]["id"]
             chapter_num = data["data"][0]["attributes"]["chapter"]
-            print(f"[+] Found First Chapter: {chapter_num} (ID: {chapter_id})")
+            print(f"[+] Found English First Chapter: {chapter_num} (ID: {chapter_id})")
             return chapter_id
-    print("[-] No English chapters found.")
+            
+    print("[-] No English chapters found. Falling back to any language...")
+    url_any = f"https://api.mangadex.org/manga/{manga_id}/feed?order[chapter]=asc&limit=1"
+    response_any = requests.get(url_any)
+    if response_any.status_code == 200:
+        data = response_any.json()
+        if data.get("data"):
+            chapter_id = data["data"][0]["id"]
+            chapter_num = data["data"][0]["attributes"]["chapter"]
+            lang = data["data"][0]["attributes"]["translatedLanguage"]
+            print(f"[+] Found Chapter in '{lang}': {chapter_num} (ID: {chapter_id})")
+            return chapter_id
+            
+    print("[-] No chapters found at all.")
     return None
 
 def download_chapter_images(chapter_id: str, output_dir: str = "input") -> list:
