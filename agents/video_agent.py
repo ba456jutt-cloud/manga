@@ -64,7 +64,7 @@ def assemble_video(script_data: list, output_file: str = "output/manga_recap.mp4
             subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             
             if os.path.exists(scene_vid):
-                f.write(f"file '{scene_vid}'\\n")
+                f.write(f"file '{scene_vid}'\n")
                 
     print("[*] Concatenating scenes into final video...")
     concat_cmd = [
